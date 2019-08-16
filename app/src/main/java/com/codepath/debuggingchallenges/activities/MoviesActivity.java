@@ -2,6 +2,7 @@ package com.codepath.debuggingchallenges.activities;
 
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
 import com.codepath.debuggingchallenges.R;
@@ -24,19 +25,20 @@ public class MoviesActivity extends AppCompatActivity {
 
     RecyclerView rvMovies;
     MoviesAdapter adapter;
-    ArrayList<Movie> movies;
+    ArrayList<Movie> moviesData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies);
         rvMovies = findViewById(R.id.rvMovies);
-
+        moviesData = new ArrayList<>();
         // Create the adapter to convert the array to views
-        MoviesAdapter adapter = new MoviesAdapter(movies);
+        adapter = new MoviesAdapter(moviesData);
 
         // Attach the adapter to a ListView
         rvMovies.setAdapter(adapter);
+        rvMovies.setLayoutManager(new LinearLayoutManager(this));
 
         fetchMovies();
     }
@@ -50,7 +52,8 @@ public class MoviesActivity extends AppCompatActivity {
             public void onSuccess(int statusCode, Header[] headers, JSONObject response) {
                 try {
                     JSONArray moviesJson = response.getJSONArray("results");
-                    movies = Movie.fromJSONArray(moviesJson);
+                    moviesData.addAll(Movie.fromJSONArray(moviesJson));
+                    adapter.notifyDataSetChanged();
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
